@@ -15,7 +15,7 @@
 
 void FCFS(Process *p, int p_count){
     //compareArrival_t();
-    int io_count;
+    int io_count = 0;
     //initialize size of queues
     int jobq_size = 0, readyq_size = 0, runningq_size = 0, waitingq_size = 0, completedq_size = 0, ganttchart_size = 0;
     //user inputs the number of processes
@@ -56,6 +56,8 @@ void FCFS(Process *p, int p_count){
     set_ready_q(job_queue, ready_queue, &jobq_size, &readyq_size, time_elapsed);
     time_elapsed++;
 
+    printf("First Come First Serve Scheduling\n");
+
     while(time_elapsed <= total_bt){
         //1. check job queue if process arrived
         //puts("==============================");
@@ -69,8 +71,8 @@ void FCFS(Process *p, int p_count){
     
         //printf("print job queue\n");
         //printQueue(job_queue, jobq_size, p_count);
-        //printf("print ready queue\n");
-        //printQueue(ready_queue, readyq_size, p_count);
+        printf("print ready queue\n");
+        printQueue(ready_queue, readyq_size, p_count);
         //check if random I/O request should happen
         
         if(IOBurst(running_queue, waiting_queue, &runningq_size, &waitingq_size, p_count, &io_count, total_bt, time_elapsed)){
@@ -85,14 +87,15 @@ void FCFS(Process *p, int p_count){
         //run I/O for 1 secif a process got sent into the waiting queue
         runIO(ready_queue, waiting_queue, &readyq_size, &waitingq_size);
 
-        //printf("print waiting queue\n");
-        //printQueue(waiting_queue, waitingq_size, p_count);
+        printf("print waiting queue\n");
+        printQueue(waiting_queue, waitingq_size, p_count);
 
         //choose next process to run
         init_running_q(ready_queue, running_queue, &readyq_size, &runningq_size);
 
         //check if preemption should happen
-        //printf("print run queue\n"); 
+        printf("print run queue\n"); 
+        printQueue(running_queue, runningq_size, p_count);
 
         //run process for 1 sec
         run(running_queue);
@@ -122,10 +125,12 @@ void FCFS(Process *p, int p_count){
     
     int totalWT = calcTotalWT(completed_queue, completedq_size);
     int totalTAT = calcTotalTAT(completed_queue, completedq_size);
+
+    printGC(ganttchart, ganttchart_size);
     
     printf("average waiting time: %d/%d = %lf\n", totalWT, p_count, calcAverage(totalWT, p_count));
     printf("average turnaround time: %d/%d = %lf\n",totalTAT, p_count, calcAverage(totalTAT, p_count));
-    printGC(ganttchart, ganttchart_size);
+    
 
     for(int i = 0; i < p_count; i++){
         completed_queue[i].length = 0;
