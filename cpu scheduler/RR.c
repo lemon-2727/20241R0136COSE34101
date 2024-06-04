@@ -15,7 +15,7 @@
 
 void RR(Process* p, int p_count){
 
-    int io_count;
+    int io_count = 0;
     //initialize size of queues
     int jobq_size = 0, readyq_size = 0, runningq_size = 0, waitingq_size = 0, completedq_size = 0, ganttchart_size = 0;
     //user inputs the number of processes
@@ -55,6 +55,8 @@ void RR(Process* p, int p_count){
     
     set_ready_q(job_queue, ready_queue, &jobq_size, &readyq_size, time_elapsed);
     time_elapsed++;
+
+    printf("Round Robin Scheduling\n");
 
     //quickSort(ready_queue, 0, readyq_size-1, compareArrival_t);
     printQueue(job_queue, jobq_size, p_count);
@@ -97,7 +99,7 @@ void RR(Process* p, int p_count){
         init_running_q(ready_queue, running_queue, &readyq_size, &runningq_size);
 
         //check if preemption should happen
-        printf("print run queue\n");
+        //printf("print run queue\n");
         if(preemption(ready_queue, running_queue, readyq_size, runningq_size, 0, 0, "time quantum")){
             //preempted process should be the first element in ready queue
             //copy this process into the gantt chart
@@ -111,7 +113,8 @@ void RR(Process* p, int p_count){
         //run process for 1 sec
         run(running_queue);
         
-        printQueue(running_queue, runningq_size, p_count);
+        //printQueue(running_queue, runningq_size, p_count);
+        
         
         //check if burst time of process in running queue has ended
        if(terminate(running_queue, completed_queue, &runningq_size, &completedq_size, time_elapsed)){
