@@ -13,7 +13,7 @@
 #include <string.h>
 
 void SJF(Process *p, int p_count, int ispreempt){
-    int io_count;
+    int io_count = 0;
     //initialize size of queues
     int jobq_size = 0, readyq_size = 0, runningq_size = 0, waitingq_size = 0, completedq_size = 0, ganttchart_size = 0;
     //user inputs the number of processes
@@ -53,6 +53,16 @@ void SJF(Process *p, int p_count, int ispreempt){
     
     set_ready_q(job_queue, ready_queue, &jobq_size, &readyq_size, time_elapsed);
     time_elapsed++;
+
+    if(!ispreempt){
+        printf("Shortest Job First Scheduling - non preemptive\n");
+    }
+    else{
+
+        printf("Shortest Job First Scheduling - preemptive\n");
+
+    }
+
 
     while(time_elapsed <= total_bt){
         //1. check job queue if process arrived
