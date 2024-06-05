@@ -103,7 +103,7 @@ void init_job_q(Process *jobq, int p_count){
     }
     i = 0;
     printf("Enter details for job\n");
-    printf("Format: id arrival_time burst_time priority\n");
+    printf("Format: arrival_time burst_time priority\n");
     while(i < p_count){
         jobq[i].id = i+1;
         //randomly generate io burst time
