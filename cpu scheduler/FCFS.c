@@ -52,9 +52,15 @@ void FCFS(Process *p, int p_count){
     int total_bt = calcTotalBT(job_queue, p_count);
  
     int time_elapsed = 0;
+
+
     
     set_ready_q(job_queue, ready_queue, &jobq_size, &readyq_size, time_elapsed);
     time_elapsed++;
+
+    int show_process = 0;
+    printf("Show process?");
+    scanf("%d", &show_process);
 
     printf("First Come First Serve Scheduling\n");
 
@@ -67,12 +73,16 @@ void FCFS(Process *p, int p_count){
         //printf("sort by priority\n");
         //2. sort ready queue
         quickSort(ready_queue, 0, readyq_size-1, compareArrival_t);
+        if(show_process){
+            puts("==============================");
+            printf("total time elapsed: %d\n", time_elapsed);
+            printf("print job queue\n");
+            printQueue(job_queue, jobq_size, p_count);
+            printf("print ready queue\n");
+            printQueue(ready_queue, readyq_size, p_count);
 
-    
-        //printf("print job queue\n");
-        //printQueue(job_queue, jobq_size, p_count);
-        //printf("print ready queue\n");
-        //printQueue(ready_queue, readyq_size, p_count);
+        }
+        
         //check if random I/O request should happen
         
         if(IOBurst(running_queue, waiting_queue, &runningq_size, &waitingq_size, p_count, &io_count, total_bt, time_elapsed)){
@@ -86,11 +96,12 @@ void FCFS(Process *p, int p_count){
         
         //run I/O for 1 secif a process got sent into the waiting queue
         runIO(ready_queue, waiting_queue, &readyq_size, &waitingq_size);
-        /*
 
-        printf("print waiting queue\n");
-        printQueue(waiting_queue, waitingq_size, p_count);
-        */
+        if(show_process){
+            printf("print waiting queue\n");
+            printQueue(waiting_queue, waitingq_size, p_count);
+        }
+
 
         //choose next process to run
         init_running_q(ready_queue, running_queue, &readyq_size, &runningq_size);
@@ -100,9 +111,15 @@ void FCFS(Process *p, int p_count){
         printf("print run queue\n"); 
         printQueue(running_queue, runningq_size, p_count);
         */
+       
 
         //run process for 1 sec
         run(running_queue);
+
+        if(show_process){
+            printf("print run queue\n"); 
+            printQueue(running_queue, runningq_size, p_count);
+        }
         
         //printQueue(running_queue, runningq_size, p_count);
         
@@ -111,8 +128,11 @@ void FCFS(Process *p, int p_count){
             //terminated process should be the last element in completed queue
             addProcess(ganttchart, completed_queue, &ganttchart_size, completedq_size-1);
        }
-        //printf("print finished queue\n");
-        //printQueue(completed_queue, completedq_size, p_count);
+       if(show_process){
+            printf("print finished queue\n");
+            printQueue(completed_queue, completedq_size, p_count);
+        }
+        
 
         //printf("set ready queue\n");
         //reset ready queue
