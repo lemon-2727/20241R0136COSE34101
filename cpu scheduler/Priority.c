@@ -54,6 +54,9 @@ void Priority(Process *p, int p_count, int ispreempt){
     
     set_ready_q(job_queue, ready_queue, &jobq_size, &readyq_size, time_elapsed);
     time_elapsed++;
+    int show_process = 0;
+    printf("Show process?");
+   scanf("%d", &show_process);
 
     if(!ispreempt){
         printf("Priority Scheduling - non preemptive\n");
@@ -75,11 +78,15 @@ void Priority(Process *p, int p_count, int ispreempt){
         quickSort(ready_queue, 0, readyq_size-1, comparePriority);
 
     
-        //printf("print job queue\n");
-        //printQueue(job_queue, jobq_size, p_count);
-        //printf("print ready queue\n");
-        //printQueue(ready_queue, readyq_size, p_count);
-        //check if random I/O request should happen
+        if(show_process){
+            puts("==============================");
+            printf("total time elapsed: %d\n", time_elapsed);
+            printf("print job queue\n");
+            printQueue(job_queue, jobq_size, p_count);
+            printf("print ready queue\n");
+            printQueue(ready_queue, readyq_size, p_count);
+
+        }
         
         if(IOBurst(running_queue, waiting_queue, &runningq_size, &waitingq_size, p_count, &io_count, total_bt, time_elapsed)){
            //copy this process into the gantt chart
@@ -110,12 +117,24 @@ void Priority(Process *p, int p_count, int ispreempt){
             ready_queue[0].length = 0;
             }
             
-        }    
+        }
+
+        
+    
 
         //run process for 1 sec
         run(running_queue);
         
+        if(show_process){
+            printf("print run queue\n"); 
+            printQueue(running_queue, runningq_size, p_count);
+        }
         //printQueue(running_queue, runningq_size, p_count);
+        if(show_process){
+            printf("print waiting queue\n");
+            printQueue(waiting_queue, waitingq_size, p_count);
+        }
+
         
         //check if burst time of process in running queue has ended
        if(terminate(running_queue, completed_queue, &runningq_size, &completedq_size, time_elapsed)){
@@ -124,6 +143,10 @@ void Priority(Process *p, int p_count, int ispreempt){
        }
         //printf("print finished queue\n");
         //printQueue(completed_queue, completedq_size, p_count);
+        if(show_process){
+            printf("print finished queue\n");
+            printQueue(completed_queue, completedq_size, p_count);
+        }
 
         //printf("set ready queue\n");
         //reset ready queue
