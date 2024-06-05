@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "process.h"
 #include "ganttchart.h"
+#include "sort.h"
 
 /*
 void ganttarr(Process *queue, Process *ganttarr, int *size, int index){
@@ -72,5 +73,18 @@ void printGC(Process *p, int size){
         printf("%d", total);
     }
     printf("\n");
+
+}
+
+void printPinfo(Process *p, int size){
+    puts("---------------------------------------------------------------------------------------------");
+    puts("ID  | arrival time | burst time | priority | waiting time | turnaround time | I/O burst time");
+    quickSort(p, 0, size-1, compareId);
+
+    for(int i = 0; i < size; i++){
+        printf("%d  | %d            | %d         | %d          | %d            | %d          | %d    \n", 
+        p[i].id, p[i].arrival_t, p[i].burst_t, p[i].priority, p[i].waiting_t, p[i].turnaround_t, p[i].ioburst_t);
+    }
+    puts("---------------------------------------------------------------------------------------------");
 
 }
