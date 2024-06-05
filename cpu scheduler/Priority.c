@@ -44,6 +44,7 @@ void Priority(Process *p, int p_count, int ispreempt){
         job_queue[i].burst_t = p[i].burst_t;
         job_queue[i].priority = p[i].priority;
         job_queue[i].t_elapsed= 0;
+        job_queue[i].ioburst_t= 0;
 
     }
 
@@ -101,7 +102,7 @@ void Priority(Process *p, int p_count, int ispreempt){
         //check if preemption should happen
         //printf("print run queue\n");
         if(ispreempt){
-            if(preemption(ready_queue, running_queue, readyq_size, runningq_size, 0, 0, "priority")){
+            if(preemption(ready_queue, running_queue, readyq_size, runningq_size, 0, 0, "priority", 0)){
             //preempted process should be the first element in ready queue
             //copy this process into the gantt chart
             addProcess(ganttchart, ready_queue, &ganttchart_size, 0);
@@ -139,6 +140,8 @@ void Priority(Process *p, int p_count, int ispreempt){
     
     int totalWT = calcTotalWT(completed_queue, completedq_size);
     int totalTAT = calcTotalTAT(completed_queue, completedq_size);
+
+    printPinfo(completed_queue, completedq_size);
     
     printf("average waiting time: %d/%d = %lf\n", totalWT, p_count, calcAverage(totalWT, p_count));
     printf("average turnaround time: %d/%d = %lf\n",totalTAT, p_count, calcAverage(totalTAT, p_count));
@@ -146,9 +149,8 @@ void Priority(Process *p, int p_count, int ispreempt){
 
     for(int i = 0; i < p_count; i++){
         completed_queue[i].length = 0;
-    }
-    for(int i = 0; i < p_count; i++){
         completed_queue[i].iot_elapsed = 0;
+        completed_queue[i].ioburst_t = 0;
     }
     
     //free queues
@@ -160,3 +162,4 @@ void Priority(Process *p, int p_count, int ispreempt){
     free(ganttchart);
     
 }
+
