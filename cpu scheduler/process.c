@@ -42,6 +42,13 @@ int compareArrival_t(const void *p1, const void *p2){
 
 }
 
+int compareId(const void *p1, const void *p2){
+    const Process *pp1 = (const Process*)p1, *pp2 = (const Process*)p2;
+    return (pp1 -> id) - (pp2 -> id);
+
+
+}
+
 int calcTotalBT(Process *p, int size){
     int total = 0;
    for(int i = 0; i < size; i++){
@@ -91,6 +98,7 @@ void init_job_q(Process *jobq, int p_count){
     while(i < p_count){
         jobq[i].id = 0;
         jobq[i].t_elapsed= 0;
+        jobq[i].ioburst_t = 0;
         i++;
     }
     i = 0;
@@ -170,7 +178,7 @@ void swap_process(Process *p1, Process *p2, int index1, int index2){
 }
 
 
-int preemption(Process *p1, Process *p2, int size1, int size2, int index1, int index2, const char *str){
+int preemption(Process *p1, Process *p2, int size1, int size2, int index1, int index2, const char *str, int time_quantum){
     //each queue should have at least one process
     int i = 0;
     if(size1 < 1 || size2 < 1){
@@ -189,7 +197,7 @@ int preemption(Process *p1, Process *p2, int size1, int size2, int index1, int i
         i = compareBurst_t(p1, p2);
     }
     else if(((strcmp(str, "time quantum") == 0))){
-        if(p2[0].t_elapsed %2 == 0 && p2[0].t_elapsed!=0){
+        if(p2[0].t_elapsed %time_quantum == 0 && p2[0].t_elapsed!=0){
             //if(p1[index1].id < p2[index2].id)
             i = -1;
             
