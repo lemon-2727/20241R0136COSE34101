@@ -46,12 +46,20 @@ void RR(Process* p, int p_count){
         job_queue[i].burst_t = p[i].burst_t;
         job_queue[i].priority = p[i].priority;
         job_queue[i].t_elapsed= 0;
+        job_queue[i].ioburst_t= 0;
 
     }
 
     int total_bt = calcTotalBT(job_queue, p_count);
  
     int time_elapsed = 0;
+
+    int time_quantum = 0;
+    printf("Enter time quantum: ");
+
+
+    scanf("%d", &time_quantum);
+    
     
     set_ready_q(job_queue, ready_queue, &jobq_size, &readyq_size, time_elapsed);
     time_elapsed++;
@@ -100,7 +108,7 @@ void RR(Process* p, int p_count){
 
         //check if preemption should happen
         //printf("print run queue\n");
-        if(preemption(ready_queue, running_queue, readyq_size, runningq_size, 0, 0, "time quantum")){
+        if(preemption(ready_queue, running_queue, readyq_size, runningq_size, 0, 0, "time quantum", time_quantum)){
             //preempted process should be the first element in ready queue
             //copy this process into the gantt chart
             //if(ready_queue[0].t_elapsed%2 != 0)
@@ -139,20 +147,20 @@ void RR(Process* p, int p_count){
     
     int totalWT = calcTotalWT(completed_queue, completedq_size);
     int totalTAT = calcTotalTAT(completed_queue, completedq_size);
+
+    printPinfo(completed_queue, completedq_size);
     
     printf("average waiting time: %d/%d = %lf\n", totalWT, p_count, calcAverage(totalWT, p_count));
     printf("average turnaround time: %d/%d = %lf\n",totalTAT, p_count, calcAverage(totalTAT, p_count));
     printGC(ganttchart, ganttchart_size);
 
-     for(int i = 0; i < p_count; i++){
-        completed_queue[i].length = 0;
-    }
-
     for(int i = 0; i < p_count; i++){
+        completed_queue[i].length = 0;
         completed_queue[i].iot_elapsed = 0;
+        completed_queue[i].ioburst_t = 0;
     }
     
-    //free queues
+    //free queuess
     free(job_queue);
     free(ready_queue);
     free(running_queue);
