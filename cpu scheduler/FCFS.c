@@ -10,8 +10,7 @@
 #include <unistd.h>
 #include "evaluate.h"
 #include <string.h>
-#include "RR.h"
-#include "SJF.h"
+
 
 void FCFS(Process *p, int p_count){
     //compareArrival_t();
@@ -45,6 +44,7 @@ void FCFS(Process *p, int p_count){
         job_queue[i].arrival_t = p[i].arrival_t;
         job_queue[i].burst_t = p[i].burst_t;
         job_queue[i].priority = p[i].priority;
+        job_queue[i].ioburst_t = 0;
         job_queue[i].t_elapsed= 0;
 
     }
@@ -71,8 +71,8 @@ void FCFS(Process *p, int p_count){
     
         //printf("print job queue\n");
         //printQueue(job_queue, jobq_size, p_count);
-        printf("print ready queue\n");
-        printQueue(ready_queue, readyq_size, p_count);
+        //printf("print ready queue\n");
+        //printQueue(ready_queue, readyq_size, p_count);
         //check if random I/O request should happen
         
         if(IOBurst(running_queue, waiting_queue, &runningq_size, &waitingq_size, p_count, &io_count, total_bt, time_elapsed)){
@@ -86,16 +86,20 @@ void FCFS(Process *p, int p_count){
         
         //run I/O for 1 secif a process got sent into the waiting queue
         runIO(ready_queue, waiting_queue, &readyq_size, &waitingq_size);
+        /*
 
         printf("print waiting queue\n");
         printQueue(waiting_queue, waitingq_size, p_count);
+        */
 
         //choose next process to run
         init_running_q(ready_queue, running_queue, &readyq_size, &runningq_size);
 
         //check if preemption should happen
+        /*
         printf("print run queue\n"); 
         printQueue(running_queue, runningq_size, p_count);
+        */
 
         //run process for 1 sec
         run(running_queue);
@@ -126,6 +130,8 @@ void FCFS(Process *p, int p_count){
     int totalWT = calcTotalWT(completed_queue, completedq_size);
     int totalTAT = calcTotalTAT(completed_queue, completedq_size);
 
+    printPinfo(completed_queue, completedq_size);
+
     printGC(ganttchart, ganttchart_size);
     
     printf("average waiting time: %d/%d = %lf\n", totalWT, p_count, calcAverage(totalWT, p_count));
@@ -134,9 +140,8 @@ void FCFS(Process *p, int p_count){
 
     for(int i = 0; i < p_count; i++){
         completed_queue[i].length = 0;
-    }
-    for(int i = 0; i < p_count; i++){
         completed_queue[i].iot_elapsed = 0;
+        completed_queue[i].ioburst_t = 0;
     }
     
     //free queues
