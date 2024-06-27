@@ -42,6 +42,7 @@ void SJF(Process *p, int p_count, int ispreempt){
         job_queue[i].id = p[i].id;
         job_queue[i].arrival_t = p[i].arrival_t;
         job_queue[i].burst_t = p[i].burst_t;
+        job_queue[i].remaining_bt = p[i].burst_t;
         job_queue[i].priority = p[i].priority;
         job_queue[i].t_elapsed= 0;
         job_queue[i].ioburst_t= 0;
@@ -100,6 +101,7 @@ void SJF(Process *p, int p_count, int ispreempt){
         }
         
         
+        
         //run I/O for 1 secif a process got sent into the waiting queue
         runIO(ready_queue, waiting_queue, &readyq_size, &waitingq_size);
 
@@ -113,7 +115,7 @@ void SJF(Process *p, int p_count, int ispreempt){
 
         //check if preemption should happen
         //printf("print run queue\n");
-        if(ispreempt){
+        if(ispreempt){ 
             if(preemption(ready_queue, running_queue, readyq_size, runningq_size, 0, 0, "burst time", 0)){
             //preempted process should be the first element in ready queue
             //copy this process into the gantt chart
@@ -130,7 +132,27 @@ void SJF(Process *p, int p_count, int ispreempt){
         }
 
         //run process for 1 sec
-        run(running_queue);
+        //run process for 1 sec
+        if(runningq_size> 0){
+            printf("running\n");
+            run(running_queue);
+
+        }
+        //no processes in runningqueue
+        else{
+            printf("idleing \n");
+            Process *p = (Process *)malloc(sizeof(Process));
+            p[0].id = 0;;
+            p[0].length = 1;
+            p[0].burst_t = 1;
+            total_bt++;
+            addProcess(ganttchart, p, &ganttchart_size, 0);
+            free(p);
+
+        }
+        if(ispreempt){
+            running_queue[0].remaining_bt--;
+        }
         
         //printQueue(running_queue, runningq_size, p_count);
         if(show_process){
@@ -157,7 +179,7 @@ void SJF(Process *p, int p_count, int ispreempt){
         
 
     }
-    printf("print gantt chart\n");
+    printf("print gantt chart\n");ㄴ
 
     //printQueue(ganttchart, ganttchart_size, p_count);
     
