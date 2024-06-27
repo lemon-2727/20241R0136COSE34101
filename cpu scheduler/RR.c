@@ -17,6 +17,8 @@ void RR(Process* p, int p_count){
 
     int io_count = 0;
     //initialize size of queues
+            srand(100);
+
     int jobq_size = 0, readyq_size = 0, runningq_size = 0, waitingq_size = 0, completedq_size = 0, ganttchart_size = 0;
     //user inputs the number of processes
     //scanf("%d", &p_count);
@@ -55,6 +57,7 @@ void RR(Process* p, int p_count){
     int time_elapsed = 0;
 
     int time_quantum = 0;
+    int tq_elpased = 0;
     printf("Enter time quantum: ");
 
 
@@ -74,22 +77,7 @@ void RR(Process* p, int p_count){
     printQueue(job_queue, jobq_size, p_count);
     printQueue(ready_queue, readyq_size, p_count);
     while(time_elapsed <= total_bt){
-        //1. check job queue if process arrived
-        //puts("==============================");
-        //printf("total time elapsed: %d\n", time_elapsed);
-        
 
-        //printf("sort by priority\n");
-        //2. sort ready queue
-        
-
-        /*
-        printf("print job queue\n");
-        printQueue(job_queue, jobq_size, p_count);
-        printf("print ready queue\n");
-        printQueue(ready_queue, readyq_size, p_count);
-        */
-        //check if random I/O request should happen
 
         if(show_process){
             puts("==============================");
@@ -112,10 +100,11 @@ void RR(Process* p, int p_count){
         
         //run I/O for 1 secif a process got sent into the waiting queue
         runIO(ready_queue, waiting_queue, &readyq_size, &waitingq_size);
-        /*
+        
         printf("print waiting queue\n");
         printQueue(waiting_queue, waitingq_size, p_count);
-        */
+        
+    
        if(show_process){
             printf("print waiting queue\n");
             printQueue(waiting_queue, waitingq_size, p_count);
@@ -140,7 +129,23 @@ void RR(Process* p, int p_count){
 
         
         //run process for 1 sec
-        run(running_queue);
+        if(runningq_size> 0){
+            printf("running\n");
+            run(running_queue);
+
+        }
+        //no processes in runningqueue
+        else{
+            printf("idleing \n");
+            Process *p = (Process *)malloc(sizeof(Process));
+            p[0].id = 0;;
+            p[0].length = 1;
+            p[0].burst_t = 1;
+            total_bt++;
+            addProcess(ganttchart, p, &ganttchart_size, 0);
+            free(p);
+
+        }
         
         //printQueue(running_queue, runningq_size, p_count);
         if(show_process){
@@ -163,6 +168,7 @@ void RR(Process* p, int p_count){
 
         //printf("set ready queue\n");
         //reset ready queue
+        
         set_ready_q(job_queue, ready_queue, &jobq_size, &readyq_size, time_elapsed);
         //increment time by 1 second
         time_elapsed++;
@@ -196,7 +202,5 @@ void RR(Process* p, int p_count){
     free(waiting_queue);
     free(completed_queue);
     free(ganttchart);
-
-
 
 }
