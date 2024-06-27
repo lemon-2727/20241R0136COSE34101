@@ -72,7 +72,7 @@ void FCFS(Process *p, int p_count){
 
         //printf("sort by priority\n");
         //2. sort ready queue
-        quickSort(ready_queue, 0, readyq_size-1, compareArrival_t);
+        //quickSort(ready_queue, 0, readyq_size-1, compareArrival_t);
         if(show_process){
             puts("==============================");
             printf("total time elapsed: %d\n", time_elapsed);
@@ -85,7 +85,7 @@ void FCFS(Process *p, int p_count){
         
         //check if random I/O request should happen
         
-        if(IOBurst(running_queue, waiting_queue, &runningq_size, &waitingq_size, p_count, &io_count, total_bt, time_elapsed)){
+        if(waitingq_size == 0 && IOBurst(running_queue, waiting_queue, &runningq_size, &waitingq_size, p_count, &io_count, total_bt, time_elapsed)){
            //copy this process into the gantt chart
             addProcess(ganttchart, waiting_queue, &ganttchart_size, 0);
             //reset length of process
@@ -96,6 +96,7 @@ void FCFS(Process *p, int p_count){
         
         //run I/O for 1 secif a process got sent into the waiting queue
         runIO(ready_queue, waiting_queue, &readyq_size, &waitingq_size);
+        
 
         if(show_process){
             printf("print waiting queue\n");
@@ -111,10 +112,29 @@ void FCFS(Process *p, int p_count){
         printf("print run queue\n"); 
         printQueue(running_queue, runningq_size, p_count);
         */
-       
+       printf("check\n");
 
         //run process for 1 sec
-        run(running_queue);
+        if(runningq_size> 0){
+            printf("running\n");
+            run(running_queue);
+
+        }
+        //no processes in runningqueue
+        else{
+            printf("idleing \n");
+            Process *p = (Process *)malloc(sizeof(Process));
+            p[0].id = 0;;
+            p[0].length = 1;
+            p[0].burst_t = 1;
+            total_bt++;
+            addProcess(ganttchart, p, &ganttchart_size, 0);
+            free(p);
+
+        }
+            
+
+        
 
         if(show_process){
             printf("print run queue\n"); 
