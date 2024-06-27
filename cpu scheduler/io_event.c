@@ -11,9 +11,13 @@ void runIO(Process *ready, Process *waitq, int *size1, int *size2){
         //printf("id:%d io time elapsed: %d\n", waitq[0].id, waitq[0].iot_elapsed);
         if( waitq[0].iot_elapsed >= waitq[0].burst_t){
         //move process back to ready queue
-        addProcess(ready, waitq, size1, 0);
+            addProcess(ready, waitq, size1, *(size2)-1);
+
+    
+    
         //remove process from running queue
         deleteProcess(waitq, size2, 0);
+        
         }
     }
 
@@ -36,12 +40,13 @@ int IOBurst(Process *runq, Process *waitq, int *size1, int *size2, int p_count, 
     //for debugging 
     //printf("%d %d %d %d %d %d", num, *io_count, p_count, *size1, *size2, remaining_t);
     int var = 0;
+
     if((!(num ) && *io_count <= p_count/2) && (*size1 > 0 && *size2 == 0) && remaining_t > 1){
         printf("I/O interrupt! process id: %d\n", runq[0].id);
         //printf("num: %d\n", num);
         //burst time set randomly
         //minimum burst time is 1, max is 10
-        srand(time(NULL));
+        
         //!burst time is smaller than the total remaining time
         while(runq[0].burst_t > remaining_t){
             runq[0].burst_t = (rand() % (10 - 1 + 1)) + 1;
@@ -56,6 +61,7 @@ int IOBurst(Process *runq, Process *waitq, int *size1, int *size2, int p_count, 
          (*io_count)++;
          return 1;
     }
+    
     return 0;
     
-}
+} 
