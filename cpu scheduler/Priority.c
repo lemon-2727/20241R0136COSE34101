@@ -123,7 +123,24 @@ void Priority(Process *p, int p_count, int ispreempt){
     
 
         //run process for 1 sec
-        run(running_queue);
+        
+        if(runningq_size> 0){
+            printf("running\n");
+            run(running_queue);
+
+        }
+        //no processes in runningqueue
+        else{
+            printf("idleing \n");
+            Process *p = (Process *)malloc(sizeof(Process));
+            p[0].id = 0;;
+            p[0].length = 1;
+            p[0].burst_t = 1;
+            total_bt++;
+            addProcess(ganttchart, p, &ganttchart_size, 0);
+            free(p);
+
+        }
         
         if(show_process){
             printf("print run queue\n"); 
@@ -153,6 +170,11 @@ void Priority(Process *p, int p_count, int ispreempt){
         set_ready_q(job_queue, ready_queue, &jobq_size, &readyq_size, time_elapsed);
         //increment time by 1 second
         time_elapsed++;
+        if(time_elapsed > total_bt && runningq_size > 1){
+            terminate(running_queue, completed_queue, &runningq_size, &completedq_size, time_elapsed);
+            addProcess(ganttchart, completed_queue, &ganttchart_size, completedq_size-1);
+
+        }
 
         
 
