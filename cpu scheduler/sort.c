@@ -2,9 +2,8 @@
 #include "process.h"
 #include "sort.h"
 
-//in cases where the priority/burst time/ arrival time is the same,choose the one with the higher 
+//in cases where the priority/burst time/ arrival time is the same,choose the one with the higher id
 
-// Utility function to swap tp integers
 void swap(Process* p1, Process* p2)
 {
     Process temp;
@@ -15,17 +14,13 @@ void swap(Process* p1, Process* p2)
 
 int partition(Process *p, int low, int high, int (*compare)(const void*, const void*))
 {
-    // choose the pivot
+    // choose pivot
     Process pivot = p[high];
 
-    // Index of smaller element and Indicate
-    // the right position of pivot found so far
     int i = (low - 1);
 
     for (int j = low; j <= high; j++) {
-        // If current element is smaller than the pivot
         if (compare(&p[j], &pivot) < 0) {
-            // Increment index of smaller element
             i++;
             swap(&p[i], &p[j]);
         }
@@ -34,7 +29,6 @@ int partition(Process *p, int low, int high, int (*compare)(const void*, const v
     return (i + 1);
 }
 
-// The Quicksort function Implement
 
 void quickSort(Process *p, int low, int high, int (*compare)(const void *, const void*)){
 
