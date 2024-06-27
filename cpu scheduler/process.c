@@ -2,18 +2,20 @@
 #include <string.h>
 #include "process.h"
 #include "evaluate.h"
+#include <time.h>
+#include <stdlib.h>
 
 
 
 int compareBurst_t(const void *p1, const void *p2){
     const Process *pp1 = (const Process*)p1, *pp2 = (const Process*)p2;
-    int burst_comp = (pp1 -> burst_t) - (pp2 -> burst_t);
+    int burst_comp = (pp1 -> remaining_bt) - (pp2 -> remaining_bt);
     if(burst_comp == 0){
 
         return pp1 -> id - pp2 ->id;
     }
     
-    return (pp1 -> burst_t) - (pp2 -> burst_t);
+    return (pp1 -> remaining_bt) - (pp2 -> remaining_bt);
     
 
 }
@@ -94,6 +96,7 @@ void addArrivalTime(Process *p, int size){
 void init_job_q(Process *jobq, int p_count){
     //scanf("%d", p_count);
     int i = 0;
+    int num = 0;
     //initialize id and time elapsed to 0
     while(i < p_count){
         jobq[i].id = 0;
@@ -102,14 +105,34 @@ void init_job_q(Process *jobq, int p_count){
         i++;
     }
     i = 0;
+    srand(time(NULL));
     printf("Enter details for job\n");
-    printf("Format: arrival_time burst_time priority\n");
-    while(i < p_count){
+    printf("Format: id arrival_time burst_time priority\n");
+    printf("The first process must have arrival time 0\n");
+    while(i < p_count/2){
         jobq[i].id = i+1;
-        //randomly generate io burst time
         scanf("%d %d %d", &jobq[i].arrival_t, &jobq[i].burst_t, &jobq[i].priority);
         i++;
     }
+    
+    
+    if(p_count %2 == 0){
+        num = p_count/2;
+    }
+    else{
+        num = p_count/2+1;
+    }
+    while(i < num+p_count/2){
+        jobq[i].arrival_t = (rand() % (10- 1 + 1)) + 1;
+        jobq[i].burst_t = (rand() % (10 + 1)) + 0;
+        jobq[i].priority = (rand() % (p_count - 1 + 1)) + 1;
+        jobq[i].id = i+1;
+        printf("%d %d %d", jobq[i].arrival_t, jobq[i].burst_t, jobq[i].priority);
+        i++;
+    }
+
+    
+    
 }
 
 void set_ready_q(Process *jobq, Process *readyq, int *jobq_size, int *readyq_size, int time_elapsed){
@@ -131,7 +154,7 @@ void set_ready_q(Process *jobq, Process *readyq, int *jobq_size, int *readyq_siz
 
 void init_running_q(Process *readyq, Process *runq, int *readyq_size, int *runq_size){
     //there should only be one element in running_q
-    if(*runq_size < 1){
+    if(*runq_size < 1 && *readyq_size > 0){
         addProcess(runq, readyq, runq_size, 0);
         deleteProcess(readyq, readyq_size, 0);
 
